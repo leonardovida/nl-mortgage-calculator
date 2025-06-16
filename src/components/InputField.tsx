@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { NumericFormat } from 'react-number-format';
 
 type InputFieldProps = {
@@ -32,7 +32,7 @@ export function InputField(props: InputFieldProps) {
             thousandSeparator={true}
             value={props.value}
             disabled={props.disabled}
-            onBlur={(e: any) => {
+            onBlur={(e: React.FocusEvent<HTMLInputElement>) => {
               props.onChange(e.currentTarget.value.replace(/,/g, ''));
             }}
           />

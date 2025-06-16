@@ -39,7 +39,7 @@ export function calculateAnnuityData(
   const payOffPeriod = 0;
   const monthly = Array(360)
     .fill(0)
-    .map((v, i) => {
+    .map((_, i) => {
       //const period = i + 1;
       let balance = loan - accPaid;
       balance = Math.max(balance, 0);
@@ -91,7 +91,7 @@ export function calculateLinearData(
   let totalPaidNet = 0;
   const monthly = Array(360)
     .fill(0)
-    .map((v, i) => {
+    .map((_, i) => {
       const balance = loan - capitalPaid * i;
       const interest = balance * (loanInterest / (12 * 100));
       const grossPaid = capitalPaid + interest;

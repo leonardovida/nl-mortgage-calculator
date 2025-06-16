@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { InputField } from './InputField';
 
 export const MAX_NHG = 405000;

@@ -1,6 +1,6 @@
 import queryString from 'query-string';
-import React, { useEffect, useState, useMemo } from 'react';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { useEffect, useState, useMemo } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './App.sass';
 import {
   calculateAnnuityData,
@@ -34,8 +34,10 @@ export type AppState = {
 type InfoTabs = 'mortgage' | 'cost' | 'interest';
 type TableTabs = 'annuity' | 'linear' | 'graph';
 
-const App = (props: RouteComponentProps) => {
-  const search = queryString.parse(props.location.search, {
+const App = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const search = queryString.parse(location.search, {
     parseNumbers: true,
   });
 
@@ -88,10 +90,10 @@ const App = (props: RouteComponentProps) => {
       rent: state.rent
     });
 
-    if (props.location.search !== '?' + stateQueryString) {
-      props.history.push({ search: '?' + stateQueryString });
+    if (location.search !== '?' + stateQueryString) {
+      navigate({ search: '?' + stateQueryString }, { replace: true });
     }
-  }, [state, props.history, props.location.search]);
+  }, [state, navigate, location.search]);
 
   return (
     <div className="container">
@@ -110,19 +112,19 @@ const App = (props: RouteComponentProps) => {
         <div className="tabs is-primary">
           <ul>
             <li className={infoTab === 'mortgage' ? 'is-active' : ''}>
-              {/* eslint-disable-next-line */}
+              { }
               <a onClick={() => setInfoTab('mortgage')} role="button">
                 Mortgage
               </a>
             </li>
             <li className={infoTab === 'cost' ? 'is-active' : ''}>
-              {/* eslint-disable-next-line */}
+              { }
               <a onClick={() => setInfoTab('cost')} role="button">
                 Purchase Costs
               </a>
             </li>
             <li className={infoTab === 'interest' ? 'is-active' : ''}>
-              {/* eslint-disable-next-line */}
+              { }
               <a onClick={() => setInfoTab('interest')} role="button">
                 Interest
               </a>
@@ -148,21 +150,21 @@ const App = (props: RouteComponentProps) => {
               className={tab === 'annuity' ? 'is-active' : ''}
               onClick={() => setTab('annuity')}
             >
-              {/* eslint-disable-next-line */}
+              { }
               <a>Annuity</a>
             </li>
             <li
               className={tab === 'linear' ? 'is-active' : ''}
               onClick={() => setTab('linear')}
             >
-              {/* eslint-disable-next-line */}
+              { }
               <a>Linear</a>
             </li>
             <li
               className={tab === 'graph' ? 'is-active' : ''}
               onClick={() => setTab('graph')}
             >
-              {/* eslint-disable-next-line */}
+              { }
               <a>Graph</a>
             </li>
           </ul>
@@ -176,7 +178,7 @@ const App = (props: RouteComponentProps) => {
         <p>Consult a qualified professional before making any decision.</p>
       </section>
       <section className="section">
-        {/* eslint-disable-next-line */}
+        { }
         <a
           href="https://github.com/santiago-pan/mortgage-calculator"
           className="github-link"
@@ -258,4 +260,4 @@ function renderMortgageTabs(
   }
 }
 
-export default withRouter(App);
+export default App;
