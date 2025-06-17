@@ -15,6 +15,10 @@ This is a React TypeScript mortgage calculator designed for the Netherlands mark
 - Use the issues folder, create issues markdown files for each issue (like issue_1.md, issue_2.md, etc.) to track the progress of the issues and the solution.
 - Use the todos folder, create todos markdown files for each todo following the template structure (like todo-p1-feature-name.md).
 
+## Memory
+
+- **Always use the `gh` brew tool to access Git and GitHub functionality** instead of git commands for GitHub operations like creating PRs, viewing issues, etc.
+
 ## Documentation Organization
 
 The repository follows a structured documentation approach:
