@@ -19,7 +19,11 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "typeRoots": ["./types", "./node_modules/@types"],
-    "types": []
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src", "vite.config.ts"],
   "exclude": ["node_modules", "typings", "dist", "build", "**/*.test.ts", "**/*.test.tsx", "src/setupTests.ts"],

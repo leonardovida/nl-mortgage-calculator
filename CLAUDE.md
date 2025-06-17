@@ -13,7 +13,28 @@ This is a React TypeScript mortgage calculator designed for the Netherlands mark
 - Always make a plan before creating todos and going through the solution.
 - Always update the CLAUDE.md file with the new information.
 - Use the issues folder, create issues markdown files for each issue (like issue_1.md, issue_2.md, etc.) to track the progress of the issues and the solution.
-- Use the todos folder, create todos markdown files for each todo (like todo_1.md, todo_2.md, etc.) to keep track of todos.
+- Use the todos folder, create todos markdown files for each todo following the template structure (like todo-p1-feature-name.md).
+
+## Documentation Organization
+
+The repository follows a structured documentation approach:
+
+### Documentation Structure
+- **docs/**: Central documentation hub with ADRs and guides
+- **docs/adr/**: Architecture Decision Records documenting technical decisions
+- **issues/**: Issue tracking with templates and structured workflow
+- **todos/**: Task management with priority-based organization
+
+### Current Documentation
+- **ADR-001**: Migration from Bulma CSS to shadcn/ui + Tailwind CSS
+- **ADR-002**: Adoption of Bun as primary JavaScript runtime and package manager
+- **TODO-001**: UI migration completion tracking (P1 priority)
+
+### File Organization Standards
+- Follow template-driven documentation for consistency
+- Use priority-based naming for todos (todo-p1-feature-name.md)
+- Maintain cross-references between ADRs, issues, and todos
+- Keep documentation up-to-date with implementation changes
 
 ## Development Commands
 
@@ -50,13 +71,21 @@ This is a React TypeScript mortgage calculator designed for the Netherlands mark
 - React 18 with TypeScript
 - Vite for build tooling and development server
 - Bun for package management and test runner
-- Bulma CSS framework for styling
+- **shadcn/ui + Tailwind CSS** for modern UI components and styling
 - Recharts for data visualization
 - React Router v6 for URL management
-- Sass for styling
 - Bun Test and React Testing Library for tests
 - ESLint + Prettier for code quality
 - GitHub Actions for CI/CD
+
+## Recent Updates (2025-06-17)
+
+### ✅ UI Modernization Complete
+- **Migrated from Bulma to shadcn/ui + Tailwind CSS**
+- **Mobile-first responsive design** implemented across all components
+- **Performance optimized** by removing Bulma and Sass dependencies
+- **Accessibility improved** with semantic HTML and ARIA support
+- **All tests passing** with zero functionality regression
 
 ## Testing
 
