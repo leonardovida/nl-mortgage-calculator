@@ -19,3 +19,22 @@ export type MortgageData = {
   };
   monthly: Array<MonthMortgageData>;
 };
+
+export type AppState = {
+  // mortgage
+  price: number;
+  interest: number;
+  deduction: number;
+  savings: number;
+  rent: number;
+
+  // costs
+  notary: number;
+  valuation: number;
+  financialAdvisor: number;
+  realStateAgent: number;
+  structuralSurvey: number;
+};
+
+export type InfoTabs = 'mortgage' | 'cost' | 'interest';
+export type TableTabs = 'annuity' | 'linear' | 'graph';

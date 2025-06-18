@@ -1,6 +1,7 @@
+'use client';
 
 import { InputField } from './InputField';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export const MAX_NHG = 405000;
 export const NHG_FEE = 0.006;

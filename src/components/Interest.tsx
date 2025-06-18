@@ -1,3 +1,4 @@
+'use client';
 
 import { NumericFormat } from 'react-number-format';
 import {
@@ -5,7 +6,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from './ui/card';
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
@@ -13,7 +14,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from './ui/table';
+} from '@/components/ui/table';
 
 const intervals = [
   'Fix rate',

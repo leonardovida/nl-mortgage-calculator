@@ -39,6 +39,7 @@ Proposed → Accepted → Deprecated → Superseded
 |--------|-------|------|--------|
 | ADR-001 | [Migrate from Bulma CSS to shadcn/ui + Tailwind CSS](./2025-06-17-adr-001-migrate-from-bulma-to-shadcn-ui.md) | 2025-06-17 | Accepted |
 | ADR-002 | [Adopt Bun as Primary JavaScript Runtime and Package Manager](./2025-06-17-adr-002-adopt-bun-as-primary-javascript-runtime.md) | 2025-06-17 | Accepted |
+| ADR-003 | [Migrate from React+Vite to Next.js and Deploy on Vercel](./2025-06-17-adr-003-migrate-to-nextjs-and-vercel.md) | 2025-06-17 | Proposed |
 
 ### Deprecated ADRs
 
@@ -48,10 +49,10 @@ Proposed → Accepted → Deprecated → Superseded
 
 ### ADR Statistics
 
-- **Total ADRs**: 2
+- **Total ADRs**: 3
 - **Active**: 2
+- **Proposed**: 1
 - **Deprecated**: 0
-- **Proposed**: 0
 
 ## ADR Naming Convention
 

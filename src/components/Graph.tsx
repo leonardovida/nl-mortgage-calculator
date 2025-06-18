@@ -1,22 +1,84 @@
 
-import {
-  CartesianGrid,
-  Legend,
-  Line,
-  LineChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts';
-import { MonthMortgageData } from '../common/Types';
+'use client';
+
+import dynamic from 'next/dynamic';
+import { MonthMortgageData } from '@/common/Types';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card';
+} from '@/components/ui/card';
+import { ChartSkeleton } from './ChartSkeleton';
+
+// Create a chart component using MortgageChart
+const MortgageChart = dynamic(
+  () => import('./MortgageChart'),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className="h-[300px] sm:h-[400px] w-full touch-manipulation">
+        <div className="w-full h-full flex items-center justify-center bg-muted/10 rounded-md relative overflow-hidden">
+          {/* Chart area skeleton */}
+          <div className="absolute inset-4">
+            {/* Y-axis labels */}
+            <div className="absolute left-0 top-0 bottom-8 w-12 flex flex-col justify-between">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="h-3 w-8 bg-muted animate-pulse rounded" />
+              ))}
+            </div>
+            
+            {/* Chart lines simulation */}
+            <div className="absolute left-16 right-4 top-4 bottom-12">
+              <svg className="w-full h-full" viewBox="0 0 300 200">
+                {/* Grid lines */}
+                <defs>
+                  <pattern id="grid" width="50" height="33.33" patternUnits="userSpaceOnUse">
+                    <path d="M 50 0 L 0 0 0 33.33" fill="none" stroke="currentColor" strokeWidth="0.5" opacity="0.2"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                
+                {/* Animated skeleton lines */}
+                <path 
+                  d="M0,150 Q75,120 150,100 T300,80" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  fill="none" 
+                  opacity="0.3"
+                  className="animate-pulse"
+                />
+                <path 
+                  d="M0,120 Q75,90 150,110 T300,130" 
+                  stroke="currentColor" 
+                  strokeWidth="2" 
+                  fill="none" 
+                  opacity="0.3"
+                  className="animate-pulse"
+                  style={{ animationDelay: '0.5s' }}
+                />
+              </svg>
+            </div>
+            
+            {/* X-axis labels */}
+            <div className="absolute bottom-0 left-16 right-4 h-8 flex justify-between items-center">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-3 w-6 bg-muted animate-pulse rounded" />
+              ))}
+            </div>
+          </div>
+          
+          {/* Loading indicator */}
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-2"></div>
+            <p className="text-sm text-muted-foreground">Loading chart...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+);
 
 type GraphProps = {
   annuity: Array<MonthMortgageData>;
@@ -37,20 +99,6 @@ export function Graph(props: GraphProps) {
     };
   });
 
-  // Improved color scheme with better contrast and accessibility
-  const colors = {
-    primary: 'hsl(var(--primary))',
-    secondary: 'hsl(var(--secondary))',
-    accent: 'hsl(var(--accent))',
-    muted: 'hsl(var(--muted-foreground))',
-    destructive: 'hsl(var(--destructive))',
-    success: 'hsl(142 71% 45%)',
-  };
-
-  const formatTooltip = (value: number, name: string) => {
-    return [`€${value.toFixed(2)}`, name];
-  };
-
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
@@ -63,169 +111,7 @@ export function Graph(props: GraphProps) {
       </CardHeader>
       <CardContent>
         <div className="h-[300px] sm:h-[400px] w-full touch-manipulation">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={data}
-              margin={{ 
-                top: 10, 
-                right: 10, 
-                left: 10, 
-                bottom: 10 
-              }}
-            >
-              <CartesianGrid 
-                strokeDasharray="3 3" 
-                stroke="hsl(var(--border))" 
-                opacity={0.3}
-              />
-              <XAxis 
-                dataKey="month" 
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-                interval="preserveStartEnd"
-                minTickGap={20}
-              />
-              <YAxis 
-                unit="€" 
-                stroke="hsl(var(--muted-foreground))"
-                fontSize={10}
-                tickLine={false}
-                axisLine={false}
-                width={50}
-                tickFormatter={(value) => `€${(value / 1000).toFixed(0)}k`}
-              />
-              <Tooltip 
-                formatter={formatTooltip}
-                labelStyle={{ color: 'hsl(var(--foreground))' }}
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--background))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '6px',
-                  boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                  fontSize: '12px',
-                }}
-                cursor={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
-              />
-              <Legend 
-                wrapperStyle={{ 
-                  paddingTop: '10px',
-                  fontSize: '10px',
-                }}
-                content={({ payload }) => (
-                  <div className="flex flex-wrap justify-center gap-1 sm:gap-2 text-xs">
-                    {payload?.map((entry, index) => (
-                      <div key={index} className="flex items-center gap-1">
-                        <div 
-                          className="w-3 h-0.5" 
-                          style={{ 
-                            backgroundColor: entry.color,
-                            ...(entry.payload?.strokeDasharray ? {
-                              borderTop: `2px dashed ${entry.color}`,
-                              backgroundColor: 'transparent',
-                            } : {})
-                          }}
-                        />
-                        <span style={{ color: entry.color }}>{entry.value}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              />
-
-              {/* Annuity Lines */}
-              <Line
-                type="monotone"
-                dataKey="annuityGross"
-                name="Gross (Annuity)"
-                stroke={colors.primary}
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ 
-                  r: 5, 
-                  stroke: colors.primary, 
-                  strokeWidth: 2,
-                  fill: 'hsl(var(--background))'
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="annuityCapital"
-                name="Capital (Annuity)"
-                stroke={colors.success}
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ 
-                  r: 5, 
-                  stroke: colors.success, 
-                  strokeWidth: 2,
-                  fill: 'hsl(var(--background))'
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="annuityInterest"
-                name="Interest (Annuity)"
-                stroke={colors.destructive}
-                strokeWidth={2}
-                dot={false}
-                activeDot={{ 
-                  r: 5, 
-                  stroke: colors.destructive, 
-                  strokeWidth: 2,
-                  fill: 'hsl(var(--background))'
-                }}
-              />
-
-              {/* Linear Lines */}
-              <Line
-                type="monotone"
-                dataKey="linearGross"
-                name="Gross (Linear)"
-                stroke={colors.primary}
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={false}
-                activeDot={{ 
-                  r: 5, 
-                  stroke: colors.primary, 
-                  strokeWidth: 2,
-                  fill: 'hsl(var(--background))'
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="linearCapital"
-                name="Capital (Linear)"
-                stroke={colors.success}
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={false}
-                activeDot={{ 
-                  r: 5, 
-                  stroke: colors.success, 
-                  strokeWidth: 2,
-                  fill: 'hsl(var(--background))'
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="linearInterest"
-                name="Interest (Linear)"
-                stroke={colors.destructive}
-                strokeWidth={2}
-                strokeDasharray="5 5"
-                dot={false}
-                activeDot={{ 
-                  r: 5, 
-                  stroke: colors.destructive, 
-                  strokeWidth: 2,
-                  fill: 'hsl(var(--background))'
-                }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+          <MortgageChart data={data} />
         </div>
       </CardContent>
     </Card>

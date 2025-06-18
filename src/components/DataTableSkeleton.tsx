@@ -1,7 +1,5 @@
-
 'use client';
 
-import { MonthMortgageData } from '@/common/Types';
 import {
   Card,
   CardContent,
@@ -16,29 +14,16 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Skeleton } from '@/components/ui/skeleton';
 
-type TableProps = {
-  data: Array<MonthMortgageData>;
-};
-
-function TableNumber(props: { value: number }) {
-  return (
-    <TableCell className="text-right font-mono tabular-nums whitespace-nowrap px-4">
-      €{(Math.round(props.value * 100) / 100).toFixed(2)}
-    </TableCell>
-  );
-}
-
-export function DataTable(props: TableProps) {
+export function DataTableSkeleton() {
   return (
     <Card className="w-full">
       <CardHeader className="pb-3">
         <CardTitle className="text-lg font-semibold">
-          Monthly Mortgage Breakdown
+          <Skeleton className="h-6 w-48" />
         </CardTitle>
-        <p className="text-sm text-muted-foreground mt-1">
-          Swipe horizontally to view all columns on mobile
-        </p>
+        <Skeleton className="h-4 w-72 mt-1" />
       </CardHeader>
       <CardContent className="p-0">
         <div className="rounded-md border">
@@ -70,17 +55,29 @@ export function DataTable(props: TableProps) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {props.data.map((item, i) => (
+                {Array.from({ length: 12 }).map((_, i) => (
                   <TableRow key={i} className="hover:bg-muted/50">
                     <TableCell className="text-center font-medium w-12 sticky left-0 bg-background z-10 border-r">
                       {i + 1}
                     </TableCell>
-                    <TableNumber value={item.balance} />
-                    <TableNumber value={item.grossPaid} />
-                    <TableNumber value={item.capitalPaid} />
-                    <TableNumber value={item.interest} />
-                    <TableNumber value={item.deduction} />
-                    <TableNumber value={item.netPaid} />
+                    <TableCell className="text-right font-mono tabular-nums whitespace-nowrap px-4">
+                      <Skeleton className="h-4 w-20 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right font-mono tabular-nums whitespace-nowrap px-4">
+                      <Skeleton className="h-4 w-16 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right font-mono tabular-nums whitespace-nowrap px-4">
+                      <Skeleton className="h-4 w-16 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right font-mono tabular-nums whitespace-nowrap px-4">
+                      <Skeleton className="h-4 w-16 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right font-mono tabular-nums whitespace-nowrap px-4">
+                      <Skeleton className="h-4 w-18 ml-auto" />
+                    </TableCell>
+                    <TableCell className="text-right font-mono tabular-nums whitespace-nowrap px-4">
+                      <Skeleton className="h-4 w-16 ml-auto" />
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

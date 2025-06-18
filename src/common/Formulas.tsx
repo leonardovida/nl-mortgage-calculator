@@ -1,6 +1,8 @@
-import { MortgageData } from './Types';
-import { MAX_NHG, NHG_FEE } from '../components/Costs';
-import { AppState } from '../App';
+import { MortgageData, AppState } from './Types';
+
+// Constants for Dutch mortgage calculations
+export const MAX_NHG = 435000; // Maximum amount for National Mortgage Guarantee (2024)
+export const NHG_FEE = 0.007; // NHG fee percentage
 
 export function PMT(rate: number, nperiod: number, pv: number) {
   if (rate === 0) return -pv / nperiod;

@@ -1,6 +1,7 @@
+'use client';
 
 import { InputField } from './InputField';
-import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type Props = {
   price: number;
