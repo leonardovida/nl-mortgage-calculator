@@ -242,23 +242,70 @@ export function MortgageCalculator() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <header className="bg-primary text-primary-foreground" role="banner">
-        <div className="container mx-auto px-4 py-12 sm:py-16 lg:py-20">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-              Mortgage Calculator
-            </h1>
-            <p className="text-lg sm:text-xl text-primary-foreground/90 max-w-2xl mx-auto">
-              Annuity and Linear mortgage calculator for the Netherlands
-            </p>
+      {/* Modern Hero Section */}
+      <header className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900" role="banner">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMwMDAwMDAiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iNyIgY3k9IjciIHI9IjEiLz48Y2lyY2xlIGN4PSI1MyIgY3k9IjciIHI9IjEiLz48Y2lyY2xlIGN4PSI1MyIgY3k9IjUzIiByPSIxIi8+PGNpcmNsZSBjeD0iNyIgY3k9IjUzIiByPSIxIi8+PC9nPjwvZz48L3N2Zz4=')] opacity-40"></div>
+        
+        <div className="relative container mx-auto px-4 py-16 sm:py-20 lg:py-24">
+          <div className="max-w-4xl mx-auto">
+            {/* Badge */}
+            <div className="flex justify-center mb-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 rounded-full text-sm font-medium text-slate-600 dark:text-slate-300">
+                <svg className="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
+                  <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                </svg>
+                <span>Netherlands Market</span>
+              </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="text-center space-y-6">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-slate-900 dark:text-white">
+                <span className="block">Smart Mortgage</span>
+                <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  Calculator
+                </span>
+              </h1>
+              
+              <p className="text-xl sm:text-2xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+                Compare annuity and linear mortgages with{' '}
+                <span className="font-semibold text-slate-900 dark:text-white">real-time rates</span>{' '}
+                from leading Dutch banks
+              </p>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>First-time buyer benefits</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>Rent vs buy analysis</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                  <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>Live interest rates</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        
+        {/* Bottom border gradient */}
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-slate-300 to-transparent dark:via-slate-600"></div>
       </header>
 
       <main 
         id="main-content" 
-        className="container mx-auto px-4 py-8 space-y-12" 
+        className="container mx-auto px-4 py-16 space-y-20" 
         role="main"
         tabIndex={-1}
       >
@@ -267,9 +314,14 @@ export function MortgageCalculator() {
           className="max-w-6xl mx-auto" 
           aria-labelledby="mortgage-info-heading"
         >
-          <h2 id="mortgage-info-heading" className="text-2xl font-semibold mb-6">
-            Mortgage Information
-          </h2>
+          <div className="text-center mb-12">
+            <h2 id="mortgage-info-heading" className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+              Mortgage Information
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Configure your mortgage parameters and explore different scenarios with Dutch tax benefits
+            </p>
+          </div>
           <Tabs 
             value={infoTab} 
             onValueChange={(value) => setInfoTab(value as InfoTabs)}
@@ -374,9 +426,14 @@ export function MortgageCalculator() {
           id="mortgage-calculator"
           tabIndex={-1}
         >
-          <h2 id="mortgage-structure-heading" className="text-2xl font-semibold mb-6">
-            Mortgage Structure
-          </h2>
+          <div className="text-center mb-12">
+            <h2 id="mortgage-structure-heading" className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+              Mortgage Structure Comparison
+            </h2>
+            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+              Compare annuity and linear mortgage structures with detailed payment breakdowns and visualizations
+            </p>
+          </div>
           <Tabs 
             value={tableTab} 
             onValueChange={(value) => setTableTab(value as TableTabs)}
@@ -428,37 +485,52 @@ export function MortgageCalculator() {
 
         {/* Disclaimer Section */}
         <section className="max-w-4xl mx-auto">
-          <div className="bg-muted/50 rounded-lg p-6 border">
-            <h3 className="text-lg font-semibold mb-3 text-muted-foreground">Disclaimer:</h3>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>This calculator is for illustrative purposes only.</p>
-              <p>No guarantee is made for the accuracy of the data provided.</p>
-              <p>Consult a qualified professional before making any decision.</p>
+          <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl p-8 border border-amber-200 dark:border-amber-800">
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0">
+                <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-3 text-amber-900 dark:text-amber-100">Important Disclaimer</h3>
+                <div className="space-y-2 text-sm text-amber-800 dark:text-amber-200 leading-relaxed">
+                  <p>This calculator provides estimates for illustrative purposes only and should not be considered as financial advice.</p>
+                  <p>Interest rates, tax regulations, and market conditions may vary. Always consult with qualified financial professionals before making mortgage decisions.</p>
+                  <p>The calculations assume current Dutch tax laws and may not reflect future changes in regulations.</p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="border-t bg-muted/30" role="contentinfo">
-        <div className="container mx-auto px-4 py-8">
-          <div className="flex justify-center">
-            <a
-              href="https://github.com/santiago-pan/mortgage-calculator"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md px-2 py-1"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="View source code on GitHub (opens in new tab)"
-            >
-              <Image
-                src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNOS45OTkgMGMtNS41MjEgMC05Ljk5OSA0LjU5LTkuOTk5IDEwLjI1MyAwIDQuNTMgMi44NjUgOC4zNzMgNi44MzkgOS43MjguNS4wOTQuNjgzLS4yMjIuNjgzLS40OTRsLS4wMTQtMS43NDRjLTIuNzgyLjYxOS0zLjM2OC0xLjM3NS0zLjM2OC0xLjM3NS0uNDU1LTEuMTg1LTEuMTExLTEuNS0xLjExMS0xLjUtLjkwOC0uNjM2LjA2OS0uNjIzLjA2OS0uNjIzIDEuMDA0LjA3MiAxLjUzMiAxLjA1NyAxLjUzMiAxLjA1Ny44OTIgMS41NjcgMi4zNDEgMS4xMTQgMi45MS44NTIuMDkxLS42NjIuMzQ5LTEuMTE0LjYzNS0xLjM3LTIuMjItLjI1OS00LjU1NS0xLjEzOS00LjU1NS01LjA2OCAwLTEuMTE5LjM5LTIuMDM1IDEuMDI5LTIuNzUxLS4xMDMtLjI1OS0uNDQ2LTEuMzAyLjA5OC0yLjcxMyAwIDAgLjgzOS0uMjc2IDIuNzUgMS4wNTEuNzk3LS4yMjggMS42NTMtLjM0MSAyLjUwMy0uMzQ2Ljg1LjAwNCAxLjcwNS4xMTggMi41MDMuMzQ2IDEuOTA5LTEuMzI3IDIuNzQ3LTEuMDUxIDIuNzQ3LTEuMDUxLjU0NiAxLjQxMS4yMDMgMi40NTQuMSAyLjcxMy42NDEuNzE2IDEuMDI4IDEuNjMyIDEuMDI4IDIuNzUxIDAgMy45MzktMi4zMzggNC44MDYtNC41NjYgNS4wNTkuMzU5LjMxNy42NzguOTQyLjY3OCAxLjg5OCAwIDEuMzcxLS4wMTIgMi40NzctLjAxMiAyLjgxMyAwIC4yNzQuMTguNTk0LjY4OC40OTMgMy45NzEtMS4zNTkgNi44MzMtNS4xOTkgNi44MzMtOS43MjggMC01LjY2My00LjQ3OC0xMC4yNTMtMTAuMDAxLTEwLjI1MyIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4K"
-                alt="GitHub"
-                width={20}
-                height={20}
-                className="w-5 h-5"
-              />
-              <span>View on GitHub</span>
-            </a>
+      <footer className="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900" role="contentinfo">
+        <div className="container mx-auto px-4 py-12">
+          <div className="text-center space-y-6">
+            <div className="flex justify-center">
+              <a
+                href="https://github.com/santiago-pan/mortgage-calculator"
+                className="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View source code on GitHub (opens in new tab)"
+              >
+                <Image
+                  src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNOS45OTkgMGMtNS41MjEgMC05Ljk5OSA0LjU5LTkuOTk5IDEwLjI1MyAwIDQuNTMgMi44NjUgOC4zNzMgNi44MzkgOS3MjguNS4wOTQuNjgzLS4yMjIuNjgzLS40OTRsLS4wMTQtMS43NDRjLTIuNzgyLjYxOS0zLjM2OC0xLjM3NS0zLjM2OC0xLjM3NS0uNDU1LTEuMTg1LTEuMTExLTEuNS0xLjExMS0xLjUtLjkwOC0uNjM2LjA2OS0uNjIzLjA2OS0uNjIzIDEuMDA0LjA3MiAxLjUzMiAxLjA1NyAxLjUzMiAxLjA1Ny44OTIgMS41NjcgMi4zNDEgMS4xMTQgMi45MS44NTIuMDkxLS42NjIuMzQ5LTEuMTE0LjYzNS0xLjM3LTIuMjItLjI1OS00LjU1NS0xLjEzOS00LjU1NS01LjA2OCAwLTEuMTE5LjM5LTIuMDM1IDEuMDI5LTIuNzUxLS4xMDMtLjI1OS0uNDQ2LTEuMzAyLjA5OC0yLjcxMyAwIDAgLjgzOS0uMjc2IDIuNzUgMS4wNTEuNzk3LS4yMjggMS42NTMtLjM0MSAyLjUwMy0uMzQ2Ljg1LjAwNCAxLjcwNS4xMTggMi41MDMuMzQ2IDEuOTA5LTEuMzI3IDIuNzQ3LTEuMDUxIDIuNzQ3LTEuMDUxLjU0NiAxLjQxMS4yMDMgMi40NTQuMSAyLjcxMy42NDEuNzE2IDEuMDI4IDEuNjMyIDEuMDI4IDIuNzUxIDAgMy45MzktMi4zMzggNC44MDYtNC41NjYgNS4wNTkuMzU5LjMxNy42NzguOTQyLjY3OCAxLjg5OCAwIDEuMzcxLS4wMTIgMi40NzctLjAxMiAyLjgxMyAwIC4yNzQuMTguNTk0LjY4OC40OTMgMy45NzEtMS4zNTkgNi44MzMtNS4xOTkgNi44MzMtOS43MjggMC01LjY2My00LjQ3OC0xMC4yNTMtMTAuMDAxLTEwLjI1MyIgZmlsbD0iIzAwMCIvPgo8L3N2Zz4K"
+                  alt="GitHub"
+                  width={20}
+                  height={20}
+                  className="w-5 h-5"
+                />
+                <span className="font-medium">View on GitHub</span>
+              </a>
+            </div>
+            <div className="text-sm text-slate-500 dark:text-slate-400">
+              <p>Built with Next.js, TypeScript, and Tailwind CSS</p>
+              <p className="mt-1">© 2025 Smart Mortgage Calculator. For educational purposes.</p>
+            </div>
           </div>
         </div>
       </footer>
