@@ -2,6 +2,7 @@
 
 import { InputField } from './InputField';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export const MAX_NHG = 405000;
 export const NHG_FEE = 0.006;
@@ -15,12 +16,16 @@ type Props = {
   financialAdvisor: number;
   realStateAgent: number;
   structuralSurvey: number;
+  isFirstTimeBuyer: boolean;
+  transferTaxRate: number;
+  transferTax: number;
+  transferTaxExempt: boolean;
   onChange: (field: string, value: number) => void;
+  onBooleanChange: (field: string, value: boolean) => void;
 };
 
 export function Costs(props: Props) {
   const bankGuarantee = 0.001 * props.price;
-  const transferTax = 0.02 * props.price;
   const nhg = props.price > MAX_NHG ? 0 : NHG_FEE * props.loan;
 
   return (
@@ -33,13 +38,53 @@ export function Costs(props: Props) {
             <CardTitle className="text-lg">Fixed Costs</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <InputField
-              title="Transfer tax"
-              prepend="€"
-              disabled
-              value={transferTax}
-              onChange={() => {}}
-            />
+            {/* First-time buyer toggle */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-foreground">
+                First-time buyer
+              </label>
+              <Button
+                variant={props.isFirstTimeBuyer ? "default" : "outline"}
+                size="sm"
+                onClick={() => props.onBooleanChange('isFirstTimeBuyer', !props.isFirstTimeBuyer)}
+                className="w-full"
+              >
+                {props.isFirstTimeBuyer ? "Yes" : "No"}
+              </Button>
+              {props.isFirstTimeBuyer && (
+                <p className="text-xs text-muted-foreground">
+                  No transfer tax for houses under €525,000
+                </p>
+              )}
+            </div>
+
+            {/* Transfer tax rate (only shown if not exempt) */}
+            {!props.transferTaxExempt && (
+              <InputField
+                title="Transfer tax rate"
+                append="%"
+                value={props.transferTaxRate}
+                onChange={(value) =>
+                  props.onChange('transferTaxRate', parseFloat(value))
+                }
+              />
+            )}
+
+            {/* Transfer tax amount */}
+            <div className="space-y-2">
+              <InputField
+                title={`Transfer tax ${props.transferTaxExempt ? '(EXEMPT)' : ''}`}
+                prepend="€"
+                disabled
+                value={props.transferTax}
+                onChange={() => {}}
+              />
+              {props.transferTaxExempt && (
+                <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+                  Savings: €{(props.price * 0.02).toLocaleString()}
+                </p>
+              )}
+            </div>
             <InputField
               title="Valuation"
               prepend="€"

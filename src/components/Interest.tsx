@@ -76,7 +76,7 @@ function TableNumber(props: { value: string; suffix: string | '€' }) {
   );
 }
 
-export function Interest() {
+export default function Interest() {
   return (
     <div className="space-y-6">
       {/* Reference Interest Rates Card */}

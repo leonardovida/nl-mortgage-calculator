@@ -133,13 +133,21 @@ export function calgulateLoanFigures({
   realStateAgent,
   structuralSurvey,
   savings,
+  isFirstTimeBuyer,
+  transferTaxRate,
 }: AppState): {
   loan: number;
   cost: number;
   percentage: number;
+  transferTax: number;
+  transferTaxExempt: boolean;
 } {
   const bankGuarantee = 0.001 * price;
-  const transferTax = 0.02 * price;
+  
+  // Calculate transfer tax based on first-time buyer status and price
+  const transferTaxExempt = isFirstTimeBuyer && price < 525000;
+  const transferTax = transferTaxExempt ? 0 : (transferTaxRate / 100) * price;
+  
   const nhgAvailable = price > MAX_NHG ? false : true;
 
   let cost =
@@ -157,5 +165,5 @@ export function calgulateLoanFigures({
 
   const percentage = loan / price;
 
-  return { loan, cost, percentage };
+  return { loan, cost, percentage, transferTax, transferTaxExempt };
 }

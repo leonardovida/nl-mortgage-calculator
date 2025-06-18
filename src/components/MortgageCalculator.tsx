@@ -48,7 +48,7 @@ const Costs = dynamic(() => import('@/components/Costs').then(mod => ({ default:
   ssr: true
 });
 
-const Interest = dynamic(() => import('@/components/Interest').then(mod => ({ default: mod.Interest })), {
+const Interest = dynamic(() => import('@/components/Interest'), {
   loading: () => (
     <div className="animate-pulse space-y-4">
       <div className="h-8 bg-muted rounded w-1/3"></div>
@@ -60,6 +60,23 @@ const Interest = dynamic(() => import('@/components/Interest').then(mod => ({ de
     </div>
   ),
   ssr: true
+});
+
+const RentVsBuy = dynamic(() => import('@/components/RentVsBuy').then(mod => ({ default: mod.RentVsBuy })), {
+  loading: () => (
+    <div className="animate-pulse space-y-4">
+      <div className="h-8 bg-muted rounded w-1/3"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="space-y-2">
+            <div className="h-4 bg-muted rounded w-2/3"></div>
+            <div className="h-10 bg-muted rounded"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  ),
+  ssr: false
 });
 
 // Dynamic imports for heavy components
@@ -95,12 +112,16 @@ export function MortgageCalculator() {
     financialAdvisor: 2500,
     realStateAgent: 2750 * 1.21,
     structuralSurvey: 800,
+    isFirstTimeBuyer: searchParams.get('firstTime') === 'true' || false,
+    transferTaxRate: Number(searchParams.get('taxRate')) || 2.0,
+    propertyAppreciationRate: Number(searchParams.get('appreciation')) || 3.0,
+    comparisonPeriodYears: Number(searchParams.get('period')) || 10,
   });
 
   const [infoTab, setInfoTab] = useState<InfoTabs>('mortgage');
   const [tableTab, setTableTab] = useState<TableTabs>('annuity');
 
-  const { loan, cost, percentage } = calgulateLoanFigures(state);
+  const { loan, cost, percentage, transferTax, transferTaxExempt } = calgulateLoanFigures(state);
 
   const linear = useMemo(
     () => calculateLinearData(state.interest, state.deduction, state.savings, loan),
@@ -116,6 +137,10 @@ export function MortgageCalculator() {
     setState({ ...state, [field]: value });
   }
 
+  function handleBooleanChange(field: string, value: boolean) {
+    setState({ ...state, [field]: value });
+  }
+
   // Update URL when state changes - only sync the main mortgage parameters
   useEffect(() => {
     const params = new URLSearchParams();
@@ -124,10 +149,14 @@ export function MortgageCalculator() {
     params.set('deduction', state.deduction.toString());
     params.set('savings', state.savings.toString());
     params.set('rent', state.rent.toString());
+    params.set('firstTime', state.isFirstTimeBuyer.toString());
+    params.set('taxRate', state.transferTaxRate.toString());
+    params.set('appreciation', state.propertyAppreciationRate.toString());
+    params.set('period', state.comparisonPeriodYears.toString());
     
     const queryString = params.toString();
     router.replace(`?${queryString}`, { scroll: false });
-  }, [state.price, state.interest, state.deduction, state.savings, state.rent, router]);
+  }, [state.price, state.interest, state.deduction, state.savings, state.rent, state.isFirstTimeBuyer, state.transferTaxRate, state.propertyAppreciationRate, state.comparisonPeriodYears, router]);
 
   function renderInfoTabs(
     tab: InfoTabs,
@@ -171,9 +200,28 @@ export function MortgageCalculator() {
           />
         );
       case 'cost':
-        return <Costs {...state} loan={loan} onChange={handleChange} />;
+        return <Costs 
+          {...state} 
+          loan={loan} 
+          transferTax={transferTax}
+          transferTaxExempt={transferTaxExempt}
+          onChange={handleChange} 
+          onBooleanChange={handleBooleanChange}
+        />;
       case 'interest':
         return <Interest />;
+      case 'rentbuy':
+        return <RentVsBuy
+          price={state.price}
+          rent={state.rent}
+          savings={state.savings}
+          loan={loan}
+          cost={cost}
+          annuityTotals={annuity}
+          propertyAppreciationRate={state.propertyAppreciationRate}
+          comparisonPeriodYears={state.comparisonPeriodYears}
+          onChange={handleChange}
+        />;
     }
   }
 
@@ -228,7 +276,7 @@ export function MortgageCalculator() {
             aria-label="Mortgage information options"
           >
             <TabsList 
-              className="grid w-full grid-cols-3 lg:w-auto lg:grid-cols-none lg:inline-flex"
+              className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-none lg:inline-flex"
               aria-label="Mortgage information tabs"
             >
               <TabsTrigger value="mortgage" aria-controls="mortgage-tab-content">
@@ -239,6 +287,9 @@ export function MortgageCalculator() {
               </TabsTrigger>
               <TabsTrigger value="interest" aria-controls="interest-tab-content">
                 Interest
+              </TabsTrigger>
+              <TabsTrigger value="rentbuy" aria-controls="rentbuy-tab-content">
+                Rent vs Buy
               </TabsTrigger>
             </TabsList>
             <TabsContent 
@@ -286,6 +337,24 @@ export function MortgageCalculator() {
             >
               {renderInfoTabs(
                 'interest',
+                state,
+                loan,
+                cost,
+                percentage,
+                annuity.totals,
+                linear.totals,
+                handleChange,
+              )}
+            </TabsContent>
+            <TabsContent 
+              value="rentbuy" 
+              className="mt-6"
+              id="rentbuy-tab-content"
+              role="tabpanel"
+              aria-labelledby="rentbuy-tab"
+            >
+              {renderInfoTabs(
+                'rentbuy',
                 state,
                 loan,
                 cost,

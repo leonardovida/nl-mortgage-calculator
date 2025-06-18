@@ -34,7 +34,15 @@ export type AppState = {
   financialAdvisor: number;
   realStateAgent: number;
   structuralSurvey: number;
+
+  // tax settings
+  isFirstTimeBuyer: boolean;
+  transferTaxRate: number;
+
+  // rent vs buy comparison
+  propertyAppreciationRate: number;
+  comparisonPeriodYears: number;
 };
 
-export type InfoTabs = 'mortgage' | 'cost' | 'interest';
+export type InfoTabs = 'mortgage' | 'cost' | 'interest' | 'rentbuy';
 export type TableTabs = 'annuity' | 'linear' | 'graph';

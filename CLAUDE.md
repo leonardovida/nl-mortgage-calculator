@@ -82,7 +82,7 @@ The repository follows a structured documentation approach:
 - ESLint + Prettier for code quality
 - GitHub Actions for CI/CD
 
-## Recent Updates (2025-06-17)
+## Recent Updates (2025-06-18)
 
 ### ✅ UI Modernization Complete
 - **Migrated from Bulma to shadcn/ui + Tailwind CSS**
@@ -90,6 +90,27 @@ The repository follows a structured documentation approach:
 - **Performance optimized** by removing Bulma and Sass dependencies
 - **Accessibility improved** with semantic HTML and ARIA support
 - **All tests passing** with zero functionality regression
+
+### ✅ New Features Added (2025-06-18)
+
+#### First-Time Buyer Tax Exemption
+- **Dutch tax law compliance**: No transfer tax for houses under €525,000 for first-time buyers
+- **Dynamic calculations**: Real-time transfer tax calculation based on buyer status and price
+- **User controls**: Toggle for first-time buyer status and configurable tax rate
+- **Savings display**: Shows exemption savings when applicable
+
+#### Rent vs Buy Comparison
+- **New dedicated tab**: Comprehensive rent vs buy analysis with property appreciation
+- **Configurable assumptions**: Property appreciation rate and comparison period settings
+- **Year-by-year breakdown**: Detailed table showing equity growth and costs over time
+- **Net worth analysis**: Compares buying vs renting financial outcomes
+- **Break-even calculations**: Identifies when buying becomes financially advantageous
+
+#### Technical Improvements
+- **Fixed ChunkLoadError**: Resolved dynamic import issues with Interest component
+- **Enhanced state management**: Added new properties for tax and comparison settings
+- **URL parameter sync**: All new settings persist in shareable URLs
+- **Test coverage**: Comprehensive tests for new tax calculation logic
 
 ## Testing
 

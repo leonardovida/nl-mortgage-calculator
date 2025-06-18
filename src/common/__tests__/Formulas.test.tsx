@@ -38,6 +38,10 @@ test('Loan figures calculation', () => {
     financialAdvisor: 2500,
     realStateAgent: 5000,
     structuralSurvey: 500,
+    isFirstTimeBuyer: true,
+    transferTaxRate: 2.0,
+    propertyAppreciationRate: 3.0,
+    comparisonPeriodYears: 10,
   };
 
   const result = calgulateLoanFigures(state);
@@ -45,6 +49,22 @@ test('Loan figures calculation', () => {
   expect(result.cost).toBeGreaterThan(0);
   expect(result.percentage).toBeGreaterThan(0);
   expect(result.percentage).toBeLessThan(1.2); // Should not exceed 120% LTV
+  
+  // First-time buyer with house under €525,000 should have no transfer tax
+  expect(result.transferTax).toBe(0);
+  expect(result.transferTaxExempt).toBe(true);
+  
+  // Test non-first-time buyer scenario
+  const nonFirstTimeState = { ...state, isFirstTimeBuyer: false };
+  const nonFirstTimeResult = calgulateLoanFigures(nonFirstTimeState);
+  expect(nonFirstTimeResult.transferTax).toBeGreaterThan(0);
+  expect(nonFirstTimeResult.transferTaxExempt).toBe(false);
+  
+  // Test first-time buyer with expensive house
+  const expensiveHouseState = { ...state, price: 600000 };
+  const expensiveResult = calgulateLoanFigures(expensiveHouseState);
+  expect(expensiveResult.transferTax).toBeGreaterThan(0);
+  expect(expensiveResult.transferTaxExempt).toBe(false);
 });
 
 test('Annuity data calculation', () => {
