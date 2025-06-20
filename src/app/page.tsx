@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { ClientMortgageCalculator } from '@/components/ClientMortgageCalculator';
+import { ClientMortgageCalculator } from '@components/common/ClientMortgageCalculator';
 import { generateDynamicMetadata, generateMortgageJsonLd } from '@/lib/metadata';
 
 type SearchParams = {

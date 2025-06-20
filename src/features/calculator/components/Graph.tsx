@@ -2,7 +2,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { MonthMortgageData } from '@/common/Types';
+import { MonthMortgageData } from '../types/Types';
 import {
   Card,
   CardContent,
@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ChartSkeleton } from './ChartSkeleton';
+import { ChartSkeleton } from '@/components/common/ChartSkeleton';
 
 // Create a chart component using MortgageChart
 const MortgageChart = dynamic(

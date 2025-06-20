@@ -4,6 +4,7 @@ import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, RefreshCw, Bug } from 'lucide-react';
+import { analytics } from '@features/analytics/lib/analytics';
 
 interface Props {
   children: ReactNode;
@@ -31,6 +32,9 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
     
+    // Track error with PostHog analytics
+    this.trackError(error, errorInfo);
+    
     // Call the onError callback if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
@@ -41,22 +45,95 @@ export class ErrorBoundary extends Component<Props, State> {
       error,
       errorInfo,
     });
-
-    // Log to external service in production
-    if (process.env.NODE_ENV === 'production') {
-      // Example: Send to error tracking service
-      // errorTrackingService.captureException(error, {
-      //   extra: errorInfo,
-      //   tags: { component: 'ErrorBoundary' }
-      // });
-    }
   }
 
+  private trackError = (error: Error, errorInfo: ErrorInfo) => {
+    try {
+      // Determine error type based on error message and context
+      let errorType: 'calculation_error' | 'component_error' | 'network_error' | 'validation_error' = 'component_error';
+      
+      const errorMessage = error.message.toLowerCase();
+      const componentStack = errorInfo.componentStack?.toLowerCase() || '';
+      
+      if (errorMessage.includes('calculation') || 
+          errorMessage.includes('mortgage') || 
+          errorMessage.includes('interest') || 
+          errorMessage.includes('payment') ||
+          errorMessage.includes('infinity') ||
+          errorMessage.includes('nan')) {
+        errorType = 'calculation_error';
+      } else if (errorMessage.includes('fetch') || 
+                 errorMessage.includes('network') ||
+                 errorMessage.includes('load')) {
+        errorType = 'network_error';
+      } else if (errorMessage.includes('invalid') ||
+                 errorMessage.includes('validation') ||
+                 errorMessage.includes('required')) {
+        errorType = 'validation_error';
+      }
+
+      // Extract component name from stack
+      const componentMatch = componentStack.match(/at (\w+)/);
+      const componentName = componentMatch ? componentMatch[1] : 'Unknown';
+
+      // Track the error
+      analytics.trackError({
+        error_type: errorType,
+        error_message: error.message,
+        error_stack: error.stack,
+        component: componentName,
+        user_action: this.getUserAction(componentStack),
+      });
+
+      // Track user journey step for error recovery
+      analytics.trackUserJourneyStep({
+        step: 'error_encountered',
+        step_category: 'calculation',
+        time_spent_seconds: 0,
+      });
+
+    } catch (trackingError) {
+      // Don't let tracking errors break the error boundary
+      console.warn('Failed to track error:', trackingError);
+    }
+  };
+
+  private getUserAction = (componentStack: string): string => {
+    if (componentStack.includes('mortgage')) return 'mortgage_calculation';
+    if (componentStack.includes('costs')) return 'cost_calculation';
+    if (componentStack.includes('rent')) return 'rent_vs_buy_analysis';
+    if (componentStack.includes('graph')) return 'chart_rendering';
+    if (componentStack.includes('table')) return 'data_table_rendering';
+    return 'unknown_action';
+  };
+
   private handleReset = () => {
+    // Track error recovery attempt
+    try {
+      analytics.trackUserJourneyStep({
+        step: 'error_recovery_attempted',
+        step_category: 'calculation',
+        completion_rate: 0.5, // User attempted recovery
+      });
+    } catch (error) {
+      console.warn('Failed to track error recovery:', error);
+    }
+    
     this.setState({ hasError: false, error: undefined, errorInfo: undefined });
   };
 
   private handleReload = () => {
+    // Track page reload attempt
+    try {
+      analytics.trackUserJourneyStep({
+        step: 'page_reload_attempted',
+        step_category: 'calculation',
+        completion_rate: 0.25, // User chose to reload instead of retry
+      });
+    } catch (error) {
+      console.warn('Failed to track page reload:', error);
+    }
+    
     window.location.reload();
   };
 

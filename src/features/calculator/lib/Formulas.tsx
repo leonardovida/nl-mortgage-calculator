@@ -1,4 +1,4 @@
-import { MortgageData, AppState } from './Types';
+import { MortgageData, AppState } from '../types/Types';
 
 // Constants for Dutch mortgage calculations
 export const MAX_NHG = 435000; // Maximum amount for National Mortgage Guarantee (2024)

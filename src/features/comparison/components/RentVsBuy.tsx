@@ -2,7 +2,9 @@
 
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { InputField } from './InputField';
+import { InputField } from '@features/calculator/components/InputField';
+import { AnalyticsInputField } from '@features/analytics/components/AnalyticsInputField';
+import { useAnalyticsContext } from '@features/analytics/components/AnalyticsProvider';
 import {
   Table,
   TableBody,
@@ -39,6 +41,9 @@ type YearlyComparison = {
 };
 
 export function RentVsBuy(props: Props) {
+  const { isInitialized, consentStatus } = useAnalyticsContext();
+  const shouldUseAnalytics = isInitialized && consentStatus === 'accepted';
+  
   const yearlyData = useMemo(() => {
     const data: YearlyComparison[] = [];
     const monthlyMortgagePayment = props.annuityTotals.totalPaidNet / 360; // 30 years
@@ -98,22 +103,52 @@ export function RentVsBuy(props: Props) {
           <CardTitle className="text-lg">Comparison Settings</CardTitle>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <InputField
-            title="Property appreciation rate"
-            append="%"
-            value={props.propertyAppreciationRate}
-            onChange={(value) =>
-              props.onChange('propertyAppreciationRate', parseFloat(value) || 0)
-            }
-          />
-          <InputField
-            title="Comparison period"
-            append="years"
-            value={props.comparisonPeriodYears}
-            onChange={(value) =>
-              props.onChange('comparisonPeriodYears', parseInt(value, 10) || 5)
-            }
-          />
+          {shouldUseAnalytics ? (
+            <AnalyticsInputField
+              title="Property appreciation rate"
+              append="%"
+              value={props.propertyAppreciationRate}
+              parameterName="propertyAppreciationRate"
+              component="RentVsBuy"
+              fieldType="input"
+              formSection="comparison_settings"
+              onChange={(value) =>
+                props.onChange('propertyAppreciationRate', parseFloat(value) || 0)
+              }
+            />
+          ) : (
+            <InputField
+              title="Property appreciation rate"
+              append="%"
+              value={props.propertyAppreciationRate}
+              onChange={(value) =>
+                props.onChange('propertyAppreciationRate', parseFloat(value) || 0)
+              }
+            />
+          )}
+          {shouldUseAnalytics ? (
+            <AnalyticsInputField
+              title="Comparison period"
+              append="years"
+              value={props.comparisonPeriodYears}
+              parameterName="comparisonPeriodYears"
+              component="RentVsBuy"
+              fieldType="input"
+              formSection="comparison_settings"
+              onChange={(value) =>
+                props.onChange('comparisonPeriodYears', parseInt(value, 10) || 5)
+              }
+            />
+          ) : (
+            <InputField
+              title="Comparison period"
+              append="years"
+              value={props.comparisonPeriodYears}
+              onChange={(value) =>
+                props.onChange('comparisonPeriodYears', parseInt(value, 10) || 5)
+              }
+            />
+          )}
         </CardContent>
       </Card>
 

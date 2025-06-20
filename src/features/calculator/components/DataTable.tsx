@@ -1,7 +1,7 @@
 
 'use client';
 
-import { MonthMortgageData } from '@/common/Types';
+import { MonthMortgageData } from '../types/Types';
 import {
   Card,
   CardContent,

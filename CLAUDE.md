@@ -19,31 +19,58 @@ This is a React TypeScript mortgage calculator designed for the Netherlands mark
 
 - **Always use the `gh` brew tool to access Git and GitHub functionality** instead of git commands for GitHub operations like creating PRs, viewing issues, etc.
 
-## Documentation Organization
+## Project Structure (Updated 2025-06-20)
 
-The repository follows a structured documentation approach:
+The repository now follows a feature-based architecture for better scalability and maintainability:
+
+### Source Code Organization
+```
+src/
+├── app/                   # Next.js app router
+├── features/              # Feature-based modules
+│   ├── calculator/        # Core calculator logic
+│   │   ├── components/    # Calculator UI components
+│   │   ├── lib/          # Formulas and calculations
+│   │   └── types/        # Calculator TypeScript types
+│   ├── analytics/        # PostHog analytics integration
+│   │   ├── components/   # Analytics components
+│   │   └── lib/         # Analytics implementation
+│   ├── database/        # Supabase database integration
+│   │   ├── components/  # Database UI components
+│   │   ├── hooks/       # Database React hooks
+│   │   ├── lib/         # Supabase client
+│   │   └── types/       # Database types
+│   └── comparison/      # Rent vs Buy comparison
+│       └── components/  # Comparison components
+├── components/          # Shared components
+│   ├── ui/             # Base UI components (shadcn)
+│   └── common/         # App-wide components
+├── hooks/              # Shared React hooks
+├── lib/                # Core utilities
+├── styles/             # Global styles
+└── types/              # Shared TypeScript types
+```
 
 ### Documentation Structure
-- **docs/**: Central documentation hub with ADRs and guides
-- **docs/adr/**: Architecture Decision Records documenting technical decisions
-- **issues/**: Issue tracking with templates and structured workflow
-- **todos/**: Task management with priority-based organization
+- **docs/architecture/**: ADRs and technical decisions
+- **docs/guides/**: How-to guides and examples
+- **docs/project/**: Project management (issues, todos)
+- **tests/**: All test files organized by type (unit, integration, e2e)
+- **database/**: Database schema and migrations
+- **scripts/**: Build and utility scripts
 
-### Current Documentation
-- **ADR-001**: Migration from Bulma CSS to shadcn/ui + Tailwind CSS
-- **ADR-002**: Adoption of Bun as primary JavaScript runtime and package manager
-- **TODO-001**: UI migration completion tracking (P1 priority)
-
-### File Organization Standards
-- Follow template-driven documentation for consistency
-- Use priority-based naming for todos (todo-p1-feature-name.md)
-- Maintain cross-references between ADRs, issues, and todos
-- Keep documentation up-to-date with implementation changes
+### TypeScript Path Aliases
+- `@/*` - Maps to `./src/*`
+- `@features/*` - Maps to `./src/features/*`
+- `@components/*` - Maps to `./src/components/*`
+- `@lib/*` - Maps to `./src/lib/*`
+- `@hooks/*` - Maps to `./src/hooks/*`
+- `@types/*` - Maps to `./src/types/*`
 
 ## Development Commands
 
 - **Start development server**: `bun dev` (Vite development server on localhost:3000)
-- **Run tests**: `bun test` (Bun test runner)
+- **Run tests**: `bun test tests/` (Bun test runner - tests located in tests/ directory)
 - **Build for production**: `bun run build` (Vite production build to dist/)
 - **Type checking**: `bun run typecheck` (TypeScript compiler check)
 - **Linting**: `bun run lint` (ESLint with TypeScript support)

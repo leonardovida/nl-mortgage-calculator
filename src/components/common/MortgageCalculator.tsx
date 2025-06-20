@@ -1,20 +1,29 @@
 'use client';
 
-import { useEffect, useState, useMemo, Suspense } from 'react';
+import { useEffect, useState, useMemo, Suspense, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useAnalytics } from '@features/analytics/lib/analytics';
+import { useAnalyticsContext } from '@features/analytics/components/AnalyticsProvider';
+import { 
+  useMortgageCalculationSaver, 
+  useParameterChangeTracker, 
+  useEnhancedAnalytics,
+  useCalculationHistory 
+} from '@features/database/hooks/useDatabase';
+import { CalculationHistory } from '@features/database/components/CalculationHistory';
 import {
   calculateAnnuityData,
   calculateLinearData,
   calgulateLoanFigures,
-} from '@/common/Formulas';
-import { AppState, InfoTabs, TableTabs, MonthMortgageData } from '@/common/Types';
+} from '@features/calculator/lib/Formulas';
+import { AppState, InfoTabs, TableTabs, MonthMortgageData } from '@features/calculator/types/Types';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import dynamic from 'next/dynamic';
-import { DataTableSkeleton } from '@/components/DataTableSkeleton';
+import { DataTableSkeleton } from '@/components/common/DataTableSkeleton';
 
 // Dynamic imports for form components
-const Mortgage = dynamic(() => import('@/components/Mortgage').then(mod => ({ default: mod.Mortgage })), {
+const Mortgage = dynamic(() => import('@features/calculator/components/Mortgage').then(mod => ({ default: mod.Mortgage })), {
   loading: () => (
     <div className="animate-pulse space-y-4">
       <div className="h-8 bg-muted rounded w-1/3"></div>
@@ -31,7 +40,7 @@ const Mortgage = dynamic(() => import('@/components/Mortgage').then(mod => ({ de
   ssr: true
 });
 
-const Costs = dynamic(() => import('@/components/Costs').then(mod => ({ default: mod.Costs })), {
+const Costs = dynamic(() => import('@features/calculator/components/Costs').then(mod => ({ default: mod.Costs })), {
   loading: () => (
     <div className="animate-pulse space-y-4">
       <div className="h-8 bg-muted rounded w-1/3"></div>
@@ -48,7 +57,7 @@ const Costs = dynamic(() => import('@/components/Costs').then(mod => ({ default:
   ssr: true
 });
 
-const Interest = dynamic(() => import('@/components/Interest'), {
+const Interest = dynamic(() => import('@features/calculator/components/Interest'), {
   loading: () => (
     <div className="animate-pulse space-y-4">
       <div className="h-8 bg-muted rounded w-1/3"></div>
@@ -62,7 +71,7 @@ const Interest = dynamic(() => import('@/components/Interest'), {
   ssr: true
 });
 
-const RentVsBuy = dynamic(() => import('@/components/RentVsBuy').then(mod => ({ default: mod.RentVsBuy })), {
+const RentVsBuy = dynamic(() => import('@features/comparison/components/RentVsBuy').then(mod => ({ default: mod.RentVsBuy })), {
   loading: () => (
     <div className="animate-pulse space-y-4">
       <div className="h-8 bg-muted rounded w-1/3"></div>
@@ -80,12 +89,12 @@ const RentVsBuy = dynamic(() => import('@/components/RentVsBuy').then(mod => ({ 
 });
 
 // Dynamic imports for heavy components
-const DataTable = dynamic(() => import('@/components/DataTable').then(mod => ({ default: mod.DataTable })), {
+const DataTable = dynamic(() => import('@features/calculator/components/DataTable').then(mod => ({ default: mod.DataTable })), {
   loading: () => <DataTableSkeleton />,
   ssr: false
 });
 
-const Graph = dynamic(() => import('@/components/Graph').then(mod => ({ default: mod.Graph })), {
+const Graph = dynamic(() => import('@features/calculator/components/Graph').then(mod => ({ default: mod.Graph })), {
   loading: () => (
     <div className="flex items-center justify-center h-[400px]">
       <div className="text-center">
@@ -100,6 +109,14 @@ const Graph = dynamic(() => import('@/components/Graph').then(mod => ({ default:
 export function MortgageCalculator() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { isInitialized, consentStatus } = useAnalyticsContext();
+  const analytics = useAnalytics();
+
+  // Database hooks
+  const { saveCalculation, autoSave, saveStatus, isAvailable: dbAvailable } = useMortgageCalculationSaver();
+  const { trackParameterChange } = useParameterChangeTracker();
+  const enhancedAnalytics = useEnhancedAnalytics();
+  const { history: calculationHistory } = useCalculationHistory();
 
   const [state, setState] = useState<AppState>({
     price: Number(searchParams.get('price')) || 310000,
@@ -120,6 +137,10 @@ export function MortgageCalculator() {
 
   const [infoTab, setInfoTab] = useState<InfoTabs>('mortgage');
   const [tableTab, setTableTab] = useState<TableTabs>('annuity');
+  const [showHistory, setShowHistory] = useState(false);
+
+  // Track calculation completion
+  const [lastCalculationTime, setLastCalculationTime] = useState<number>(Date.now());
 
   const { loan, cost, percentage, transferTax, transferTaxExempt } = calgulateLoanFigures(state);
 
@@ -133,13 +154,189 @@ export function MortgageCalculator() {
     [state.interest, state.deduction, state.savings, loan]
   );
 
-  function handleChange(field: string, value: number) {
-    setState({ ...state, [field]: value });
-  }
+  // Enhanced change handlers with analytics and database tracking
+  const handleChange = useCallback((field: string, value: number) => {
+    setState(prevState => {
+      const newState = { ...prevState, [field]: value };
+      
+      // Track parameter change in database
+      if (dbAvailable) {
+        trackParameterChange(field, value, prevState[field as keyof AppState], {
+          component: 'MortgageCalculator',
+          fieldType: 'input',
+          category: getParameterCategory(field),
+        });
+      }
+      
+      return newState;
+    });
+    setLastCalculationTime(Date.now());
+  }, [dbAvailable, trackParameterChange]);
 
-  function handleBooleanChange(field: string, value: boolean) {
-    setState({ ...state, [field]: value });
-  }
+  const handleBooleanChange = useCallback((field: string, value: boolean) => {
+    setState(prevState => {
+      const newState = { ...prevState, [field]: value };
+      
+      // Track parameter change in database
+      if (dbAvailable) {
+        trackParameterChange(field, value, prevState[field as keyof AppState], {
+          component: 'MortgageCalculator',
+          fieldType: 'toggle',
+          category: getParameterCategory(field),
+        });
+      }
+      
+      return newState;
+    });
+    setLastCalculationTime(Date.now());
+  }, [dbAvailable, trackParameterChange]);
+
+  // Tab navigation handlers with enhanced analytics and database tracking
+  const handleInfoTabChange = useCallback((newTab: InfoTabs) => {
+    const previousTab = infoTab;
+    setInfoTab(newTab);
+    
+    // Track tab navigation in PostHog
+    if (isInitialized && consentStatus === 'accepted') {
+      analytics.trackTabNavigation({
+        from_tab: previousTab,
+        to_tab: newTab,
+        tab_category: 'info',
+        navigation_method: 'click',
+      });
+
+      // Track feature usage for specific tabs
+      if (newTab === 'rentbuy') {
+        analytics.trackFeatureUsage({
+          feature: 'rent_vs_buy_analysis',
+          action: 'viewed',
+          context: {
+            property_price: state.price,
+            monthly_rent: state.rent,
+            comparison_period: state.comparisonPeriodYears,
+          },
+        });
+      }
+    }
+
+    // Track tab navigation in database
+    if (dbAvailable && enhancedAnalytics.isAvailable) {
+      enhancedAnalytics.trackTabNavigation(previousTab, newTab, 'info');
+
+      // Track feature usage for specific tabs in database
+      if (newTab === 'rentbuy') {
+        enhancedAnalytics.trackFeatureUsage('rent_vs_buy_analysis', 'viewed', {
+          property_price: state.price,
+          monthly_rent: state.rent,
+          comparison_period: state.comparisonPeriodYears,
+        });
+      }
+    }
+  }, [infoTab, isInitialized, consentStatus, analytics, state.price, state.rent, state.comparisonPeriodYears, dbAvailable, enhancedAnalytics]);
+
+  const handleTableTabChange = useCallback((newTab: TableTabs) => {
+    const previousTab = tableTab;
+    setTableTab(newTab);
+    
+    // Track tab navigation in PostHog
+    if (isInitialized && consentStatus === 'accepted') {
+      analytics.trackTabNavigation({
+        from_tab: previousTab,
+        to_tab: newTab,
+        tab_category: 'calculation',
+        navigation_method: 'click',
+      });
+
+      // Track mortgage structure comparison usage
+      analytics.trackFeatureUsage({
+        feature: 'mortgage_structure_comparison',
+        action: 'viewed',
+        value: newTab,
+        context: {
+          loan_amount: loan,
+          property_price: state.price,
+          interest_rate: state.interest,
+        },
+      });
+    }
+
+    // Track tab navigation in database
+    if (dbAvailable && enhancedAnalytics.isAvailable) {
+      enhancedAnalytics.trackTabNavigation(previousTab, newTab, 'calculation');
+      enhancedAnalytics.trackFeatureUsage('mortgage_structure_comparison', 'viewed', {
+        mortgage_type: newTab,
+        loan_amount: loan,
+        property_price: state.price,
+        interest_rate: state.interest,
+      });
+    }
+  }, [tableTab, isInitialized, consentStatus, analytics, loan, state.price, state.interest, dbAvailable, enhancedAnalytics]);
+
+  // Track calculation completion and save to database when data changes
+  useEffect(() => {
+    const calculationEndTime = Date.now();
+    const calculationDuration = calculationEndTime - lastCalculationTime;
+
+    // Debounce calculation tracking to avoid excessive events
+    const timeoutId = setTimeout(async () => {
+      if (calculationDuration > 100) {
+        // Track in PostHog
+        if (isInitialized && consentStatus === 'accepted') {
+          analytics.trackMortgageCalculationCompleted({
+            loan_amount: loan,
+            property_price: state.price,
+            interest_rate: state.interest,
+            mortgage_type: 'both',
+            calculation_duration_ms: calculationDuration,
+          });
+
+          analytics.trackUserJourneyStep({
+            step: 'calculation_completed',
+            step_category: 'calculation',
+            time_spent_seconds: Math.round(calculationDuration / 1000),
+          });
+        }
+
+        // Auto-save calculation to database
+        if (dbAvailable) {
+          try {
+            await autoSave(
+              state,
+              { loan, cost, percentage, transferTax, transferTaxExempt },
+              annuity,
+              linear
+            );
+          } catch (error) {
+            console.error('Failed to auto-save calculation:', error);
+            if (enhancedAnalytics.isAvailable) {
+              enhancedAnalytics.trackError('auto_save_error', (error as Error).message, {
+                component: 'MortgageCalculator',
+                userAction: 'calculation_update',
+              });
+            }
+          }
+        }
+      }
+    }, 2000); // 2 second debounce
+
+    return () => clearTimeout(timeoutId);
+  }, [
+    loan, 
+    state, 
+    cost, 
+    percentage, 
+    transferTax, 
+    transferTaxExempt, 
+    annuity, 
+    linear, 
+    lastCalculationTime,
+    isInitialized, 
+    consentStatus, 
+    analytics, 
+    dbAvailable, 
+    autoSave, 
+    enhancedAnalytics
+  ]);
 
   // Update URL when state changes - only sync the main mortgage parameters
   useEffect(() => {
@@ -295,6 +492,21 @@ export function MortgageCalculator() {
                   <span>Live interest rates</span>
                 </div>
               </div>
+
+              {/* History Button - only show if data is available */}
+              {(dbAvailable || calculationHistory.length > 0) && (
+                <div className="flex justify-center pt-6">
+                  <button
+                    onClick={() => setShowHistory(true)}
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200/60 dark:border-slate-700/60 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 shadow-sm hover:shadow-md"
+                  >
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                    </svg>
+                    <span>View History ({calculationHistory.length})</span>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -309,6 +521,47 @@ export function MortgageCalculator() {
         role="main"
         tabIndex={-1}
       >
+        {/* Database Status Indicator */}
+        {dbAvailable && consentStatus === 'accepted' && (
+          <div className="fixed bottom-4 right-4 z-50">
+            <div className={`
+              px-3 py-2 rounded-lg shadow-lg text-sm font-medium transition-all duration-300
+              ${saveStatus.isSaving ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-200' : 
+                saveStatus.hasUnsavedChanges ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-200' :
+                saveStatus.lastSaved ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-200' :
+                'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'}
+            `}>
+              <div className="flex items-center gap-2">
+                {saveStatus.isSaving ? (
+                  <>
+                    <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Saving...</span>
+                  </>
+                ) : saveStatus.hasUnsavedChanges ? (
+                  <>
+                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                    <span>Unsaved changes</span>
+                  </>
+                ) : saveStatus.lastSaved ? (
+                  <>
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span>Saved {new Date(saveStatus.lastSaved).toLocaleTimeString()}</span>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                    <span>Ready</span>
+                  </>
+                )}
+                {saveStatus.error && (
+                  <span className="text-red-600 dark:text-red-400 ml-2" title={saveStatus.error.message}>
+                    ⚠️
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
         {/* Mortgage Information Section */}
         <section 
           className="max-w-6xl mx-auto" 
@@ -324,7 +577,7 @@ export function MortgageCalculator() {
           </div>
           <Tabs 
             value={infoTab} 
-            onValueChange={(value) => setInfoTab(value as InfoTabs)}
+            onValueChange={(value) => handleInfoTabChange(value as InfoTabs)}
             aria-label="Mortgage information options"
           >
             <TabsList 
@@ -436,7 +689,7 @@ export function MortgageCalculator() {
           </div>
           <Tabs 
             value={tableTab} 
-            onValueChange={(value) => setTableTab(value as TableTabs)}
+            onValueChange={(value) => handleTableTabChange(value as TableTabs)}
             aria-label="Mortgage structure comparison options"
           >
             <TabsList 
@@ -534,6 +787,33 @@ export function MortgageCalculator() {
           </div>
         </div>
       </footer>
+
+      {/* Calculation History Modal */}
+      <CalculationHistory 
+        isVisible={showHistory} 
+        onClose={() => setShowHistory(false)} 
+      />
     </div>
   );
+}
+
+// Helper function to categorize parameters for analytics
+function getParameterCategory(parameter: string): string {
+  const categories: Record<string, string> = {
+    price: 'property',
+    savings: 'property',
+    interest: 'mortgage',
+    deduction: 'mortgage',
+    rent: 'comparison',
+    notary: 'costs',
+    valuation: 'costs',
+    financialAdvisor: 'costs',
+    realStateAgent: 'costs',
+    structuralSurvey: 'costs',
+    transferTaxRate: 'tax',
+    isFirstTimeBuyer: 'tax',
+    propertyAppreciationRate: 'analysis',
+    comparisonPeriodYears: 'analysis',
+  };
+  return categories[parameter] || 'other';
 }

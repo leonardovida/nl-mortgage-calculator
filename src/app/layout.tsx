@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import { AnalyticsProvider } from '@features/analytics/components/AnalyticsProvider';
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -246,11 +247,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-background font-sans`}
       >
-        <div className="relative flex min-h-screen flex-col">
-          <div className="flex-1">
-            {children}
+        <AnalyticsProvider>
+          <div className="relative flex min-h-screen flex-col">
+            <div className="flex-1">
+              {children}
+            </div>
           </div>
-        </div>
+        </AnalyticsProvider>
       </body>
     </html>
   );

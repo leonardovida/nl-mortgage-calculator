@@ -6,8 +6,8 @@ import {
   calculateAnnuityData,
   calculateLinearData,
   calgulateLoanFigures,
-} from '../Formulas';
-import { AppState } from '../Types';
+} from '../../../src/features/calculator/lib/Formulas';
+import { AppState } from '../../../src/features/calculator/types/Types';
 
 test('PMT calculation', () => {
   const result = PMT(0.04 / 12, 360, -300000);
